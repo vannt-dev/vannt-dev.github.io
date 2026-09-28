@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Van Nguyen</title>
+<meta name="description" content="Van Nguyen — Full-stack & AI Agent Engineer in Da Nang, Vietnam. Open-source tools that make AI-assisted software engineering reliable.">
+<meta property="og:title" content="Van Nguyen">
+<meta property="og:description" content="Open-source tools that make AI-assisted software engineering reliable.">
+<meta property="og:url" content="https://vannt-dev.github.io/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23176b5b'/><text x='16' y='22' font-family='system-ui,sans-serif' font-size='15' font-weight='700' fill='white' text-anchor='middle'>VN</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --text: #1d1f1e;
+    --muted: #5d625f;
+    --line: #e2e0d8;
+    --accent: #176b5b;
+    --accent-soft: #e3f0ec;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121413;
+      --surface: #1a1d1c;
+      --text: #e9ebe9;
+      --muted: #9ba19e;
+      --line: #2b302e;
+      --accent: #5cc4ac;
+      --accent-soft: #1c2d29;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.6 "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  main { max-width: 960px; margin: 0 auto; padding: 72px 16px 48px; }
+
+  header { margin-bottom: 64px; }
+  .eyebrow {
+    font: 500 13px/1 "IBM Plex Mono", ui-monospace, monospace;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 16px;
+  }
+  h1 { font-size: clamp(36px, 7vw, 56px); line-height: 1.05; font-weight: 600; margin: 0 0 16px; letter-spacing: -.02em; }
+  .lede { font-size: 19px; color: var(--muted); max-width: 640px; margin: 0 0 28px; }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; }
+  .links a {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 16px; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--surface);
+    color: var(--text); font-weight: 500; font-size: 15px;
+  }
+  .links a.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  .links a:hover { text-decoration: none; border-color: var(--accent); }
+  .links svg { width: 16px; height: 16px; fill: currentColor; }
+
+  section { margin-bottom: 56px; }
+  h2 {
+    font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--muted); margin: 0 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--line);
+  }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .card {
+    display: flex; flex-direction: column;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 20px;
+    transition: border-color .15s, transform .15s;
+  }
+  .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .card h3 { font-size: 18px; font-weight: 600; margin: 0 0 6px; }
+  .card h3 a { color: var(--text); }
+  .card p { color: var(--muted); font-size: 15px; margin: 0 0 16px; flex: 1; }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; }
+  .tag {
+    font: 500 12px/1 "IBM Plex Mono", ui-monospace, monospace;
+    color: var(--accent); background: var(--accent-soft);
+    padding: 5px 8px; border-radius: 6px; margin-right: auto;
+  }
+
+  .stack { color: var(--muted); font-size: 15px; }
+  .stack strong { color: var(--text); font-weight: 600; }
+  footer { border-top: 1px solid var(--line); padding-top: 20px; color: var(--muted); font-size: 14px; }
+  @media (prefers-reduced-motion: reduce) { .card { transition: none; } .card:hover { transform: none; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">Full-stack &amp; AI Agent Engineer · Da Nang, Vietnam</p>
+    <h1>Van Nguyen</h1>
+    <p class="lede">I build open-source tools that make AI-assisted software engineering reliable: workflow orchestration and governance for coding agents, portable agent skills, and AI-powered testing tools.</p>
+    <nav class="links" aria-label="Profiles">
+      <a class="primary" href="https://github.com/vannt-dev">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+      <a href="https://www.npmjs.com/~vannt-dev">npm</a>
+      <a href="https://github.com/vannt-dev/vannt-dev/blob/main/stats/README.md">Download stats</a>
+    </nav>
+  </header>
+
+  <section aria-labelledby="agents">
+    <h2 id="agents">AI coding agents</h2>
+    <div class="grid">
+      <article class="card">
+        <h3><a href="https://github.com/vannt-dev/junto">Junto</a></h3>
+        <p>Durable workflow orchestration for AI coding agents: plan, human approval, execute, review and verify, with verifiable evidence.</p>
+        <div class="meta"><span class="tag">Claude Code plugin</span><a href="https://vannt-dev.github.io/junto/">Site</a><a href="https://github.com/vannt-dev/junto">Code</a></div>
+      </article>
+      <article class="card">
+        <h3><a href="https://github.com/vannt-dev/aiws-factory">AIWS — AI Software Factory</a></h3>
+        <p>Turns a requirement into tested code through gated phases: analysis, design and test spec, human approval, implementation with unit tests, review, PR.</p>
+        <div class="meta"><span class="tag">Workflow</span><a href="https://vannt-dev.github.io/aiws-factory/">Site</a><a href="https://github.com/vannt-dev/aiws-factory">Code</a></div>
+      </article>
+      <article class="card">
+        <h3><a href="https://github.com/vannt-dev/governed-agent-sdlc">governed-agent-sdlc</a></h3>
+        <p>Governance toolkit for AI coding agents: policies, review gates, human approval and an audit trail.</p>
+        <div class="meta"><span class="tag">PyPI</span><a href="https://vannt-dev.github.io/governed-agent-sdlc/">Site</a><a href="https://github.com/vannt-dev/governed-agent-sdlc">Code</a></div>
+      </article>
+      <article class="card">
+        <h3><a href="https://github.com/vannt-dev/ai-engineering-skills">AI Engineering Skills</a></h3>
+        <p>Portable engineering skills for Claude Code, Codex, OpenCode and Google Antigravity.</p>
+        <div class="meta"><span class="tag">Agent skills</span><a href="https://vannt-dev.github.io/ai-engineering-skills/">Site</a><a href="https://github.com/vannt-dev/ai-engineering-skills">Code</a></div>
+      </article>
+      <article class="card">
+        <h3><a href="https://github.com/vannt-dev/token-efficient-work">token-efficient-work</a></h3>
+        <p>A skill and instruction hooks that stop coding agents from wasting tokens on redundant reads, re-checks and long output.</p>
+        <div class="meta"><span class="tag">Agent skill</span><a href="https://vannt-dev.github.io/token-efficient-work/">Site</a><a href="https://github.com/vannt-dev/token-efficient-work">Code</a></div>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="testing">
+    <h2 id="testing">AI for testing</h2>
+    <div class="grid">
+      <article class="card">
+        <h3><a href="https://github.com/vannt-dev/openapi-postman-test-generator">openapi-postman-test-generator</a></h3>
+        <p>Generate Postman collections and API tests from Swagger/OpenAPI with Codex, Claude, OpenAI or custom providers.</p>
+        <div class="meta"><span class="tag">npm</span><a href="https://vannt-dev.github.io/openapi-postman-test-generator/">Site</a><a href="https://github.com/vannt-dev/openapi-postman-test-generator">Code</a></div>
+      </article>
+      <article class="card">
+        <h3><a href="https://github.com/vannt-dev/ai-testcase-generator">ai-testcase-generator</a></h3>
+        <p>Turn requirements and user stories into ready-to-use Excel test suites for manual testers.</p>
+        <div class="meta"><span class="tag">Streamlit</span><a href="https://ai-testcase-gen.streamlit.app/">Live demo</a><a href="https://github.com/vannt-dev/ai-testcase-generator">Code</a></div>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="tools">
+    <h2 id="tools">Developer tools &amp; apps</h2>
+    <div class="grid">
+      <article class="card">
+        <h3><a href="https://github.com/vannt-dev/repokeeper">repokeeper</a></h3>
+        <p>One CLI that keeps every repository on the same standard: Conventional Commits, git hooks, CI and release-please for 11 stacks, plus GitHub settings as code.</p>
+        <div class="meta"><span class="tag">npm</span><a href="https://www.npmjs.com/package/repokeeper">npm</a><a href="https://github.com/vannt-dev/repokeeper">Code</a></div>
+      </article>
+      <article class="card">
+        <h3><a href="https://github.com/vannt-dev/network-overrides-devtools">Network Overrides</a></h3>
+        <p>Mock API responses, inject headers and simulate network failures inside Chrome DevTools.</p>
+        <div class="meta"><span class="tag">Chrome</span><a href="https://chromewebstore.google.com/detail/network-overrides-api-dev/holdjgmcnpelgclhopiejilhhkfcmpba">Web Store</a><a href="https://github.com/vannt-dev/network-overrides-devtools">Code</a></div>
+      </article>
+      <article class="card">
+        <h3><a href="https://github.com/vannt-dev/convert-md-to-pdf">Markdown to PDF</a></h3>
+        <p>CLI and Chrome extension for styled PDFs with Mermaid diagrams, LaTeX math, table of contents and themes.</p>
+        <div class="meta"><span class="tag">npm · Chrome</span><a href="https://www.npmjs.com/package/md-pdf-studio">npm</a><a href="https://chromewebstore.google.com/detail/markdown-to-pdf-converter/djikikejkmkklfeklfmddaadilhahamj">Web Store</a></div>
+      </article>
+      <article class="card">
+        <h3><a href="https://github.com/vannt-dev/region-snap">Region Snap</a></h3>
+        <p>Select a region, keep interacting with the live page, and capture the exact moment as a local PNG.</p>
+        <div class="meta"><span class="tag">Chrome</span><a href="https://chromewebstore.google.com/detail/region-snap-interactive-s/gdcpiocagphfbomdokhfomjnecnjfcon">Web Store</a><a href="https://vannt-dev.github.io/region-snap/">Site</a></div>
+      </article>
+      <article class="card">
+        <h3><a href="https://github.com/vannt-dev/dynamic-field-kit">Dynamic Field Kit</a></h3>
+        <p>Schema-driven dynamic form engine for React, Vue and Angular.</p>
+        <div class="meta"><span class="tag">TypeScript</span><a href="https://vannt-dev.github.io/dynamic-field-kit/">Site</a><a href="https://github.com/vannt-dev/dynamic-field-kit">Code</a></div>
+      </article>
+      <article class="card">
+        <h3><a href="https://github.com/vannt-dev/aegis-net">Aegis Net</a></h3>
+        <p>DNS privacy guard and ad blocker for Android and iOS: a Flutter UI over a Rust core with DNS-over-HTTPS.</p>
+        <div class="meta"><span class="tag">Flutter · Rust</span><a href="https://github.com/vannt-dev/aegis-net/releases">Releases</a><a href="https://github.com/vannt-dev/aegis-net">Code</a></div>
+      </article>
+      <article class="card">
+        <h3><a href="https://github.com/vannt-dev/nimbleclip">NimbleClip</a></h3>
+        <p>Cross-platform Flutter app for downloading public video and audio streams.</p>
+        <div class="meta"><span class="tag">Flutter</span><a href="https://github.com/vannt-dev/nimbleclip/releases/latest">Download</a><a href="https://github.com/vannt-dev/nimbleclip">Code</a></div>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="stack">
+    <h2 id="stack">Tech stack</h2>
+    <p class="stack"><strong>Languages &amp; frameworks:</strong> TypeScript · JavaScript · Python · Dart · React · Next.js · Node.js · NestJS · Flutter</p>
+  </section>
+
+  <footer>© 2026 Van Nguyen · <a href="https://github.com/vannt-dev">github.com/vannt-dev</a></footer>
+</main>
+</body>
+</html>
