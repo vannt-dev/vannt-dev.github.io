@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Official channels · Van Nguyen</title>
+<meta name="description" content="The only places vannt-dev publishes packages, extensions and apps, and how to check a download.">
+<meta property="og:title" content="Official channels · Van Nguyen">
+<meta property="og:description" content="The only places vannt-dev publishes packages, extensions and apps.">
+<meta property="og:url" content="https://vannt-dev.github.io/official.html">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231e40af'/><text x='16' y='22' font-family='system-ui,sans-serif' font-size='15' font-weight='700' fill='white' text-anchor='middle'>VN</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f6f2;
+    --surface: #ffffff;
+    --text: #1d1f1e;
+    --muted: #5d625f;
+    --line: #e2e0d8;
+    --accent: #1e40af;
+    --accent-soft: #e6ecf8;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121413;
+      --surface: #1a1d1c;
+      --text: #e9ebe9;
+      --muted: #9ba19e;
+      --line: #2b302e;
+      --accent: #8ab4f8;
+      --accent-soft: #1b2436;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.6 "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  main { max-width: 960px; margin: 0 auto; padding: 72px 16px 48px; }
+
+  header { margin-bottom: 56px; }
+  .eyebrow {
+    font: 500 13px/1 "IBM Plex Mono", ui-monospace, monospace;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 16px;
+  }
+  h1 { font-size: clamp(36px, 7vw, 56px); line-height: 1.05; font-weight: 600; margin: 0 0 16px; letter-spacing: -.02em; }
+  .lede { font-size: 19px; color: var(--muted); max-width: 640px; margin: 0; }
+
+  section { margin-bottom: 48px; }
+  h2 {
+    font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--muted); margin: 0 0 14px; padding-bottom: 10px; border-bottom: 1px solid var(--line);
+  }
+  .list { list-style: none; margin: 0; padding: 0; }
+  .list li {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px;
+    padding: 10px 0; border-bottom: 1px solid var(--line);
+  }
+  .list li:last-child { border-bottom: 0; }
+  .list a { font-weight: 500; }
+  code {
+    font: 500 13px/1.5 "IBM Plex Mono", ui-monospace, monospace;
+    color: var(--muted);
+    overflow-wrap: anywhere;
+  }
+  .checks { display: grid; gap: 14px; }
+  .check {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 20px;
+  }
+  .check p { margin: 0 0 8px; color: var(--muted); font-size: 15px; }
+  .check code { display: block; color: var(--text); }
+  #channels > p { color: var(--muted); }
+  footer { border-top: 1px solid var(--line); padding-top: 20px; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">Proof of origin</p>
+    <h1>Official channels</h1>
+    <p class="lede">These are the only places vannt-dev publishes code and builds. A package, extension or app that is not listed here is not published by vannt-dev.</p>
+  </header>
+
+  <div id="channels" aria-live="polite"><p>Loading the list…</p></div>
+
+  <section aria-labelledby="check">
+    <h2 id="check">How to check a download</h2>
+    <div class="checks">
+      <div class="check">
+        <p>npm packages carry provenance from the vannt-dev repositories. In a project that installed them:</p>
+        <code>npm audit signatures</code>
+      </div>
+      <div class="check">
+        <p>Extension ZIPs attached to GitHub releases carry a build attestation:</p>
+        <code>gh attestation verify &lt;file&gt;.zip --owner vannt-dev</code>
+      </div>
+      <div class="check">
+        <p>For an APK, compare the SHA-256 digest of the signing certificate with the one listed above:</p>
+        <code>apksigner verify --print-certs &lt;file&gt;.apk</code>
+      </div>
+    </div>
+  </section>
+
+  <footer>© 2026 Van Nguyen · <a href="/">vannt-dev.github.io</a> · <a href="https://github.com/vannt-dev">github.com/vannt-dev</a></footer>
+</main>
+<script>
+const SOURCE = "https://raw.githubusercontent.com/vannt-dev/vannt-dev/main/stats/sources.json"
+const FILE = "https://github.com/vannt-dev/vannt-dev/blob/main/stats/sources.json"
+const el = (tag, text, attrs = {}) => {
+  const n = document.createElement(tag)
+  if (text) n.textContent = text
+  for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v)
+  return n
+}
+const link = (text, href) => (/^https:\/\//.test(href) ? el("a", text, { href }) : el("span", text))
+function section(title, rows) {
+  if (!rows.length) return null
+  const s = el("section")
+  s.append(el("h2", title))
+  const ul = el("ul", "", { class: "list" })
+  for (const row of rows) {
+    const li = el("li")
+    li.append(...row)
+    ul.append(li)
+  }
+  s.append(ul)
+  return s
+}
+function render(src) {
+  const parts = [
+    section("npm", (src.npm || []).map((n) => [link(n, `https://www.npmjs.com/package/${n}`)])),
+    section("PyPI", (src.pypi || []).map((n) => [link(n, `https://pypi.org/project/${n}/`)])),
+    section("Chrome Web Store", (src.chromeWebStore || []).map((e) =>
+      [link(e.name, `https://chromewebstore.google.com/detail/${e.id}`), el("code", e.id)])),
+    section("Other stores", (src.otherListings || []).map((l) => [link(`${l.name} (${l.store})`, l.url)])),
+    section("GitHub releases", (src.githubReleases || []).map((r) =>
+      [link(r, `https://github.com/${r}/releases`)])),
+    section("Android signing certificates (APKs from GitHub releases)",
+      (src.signingCertificates || []).map((c) => [el("span", c.repo), el("code", c.sha256)])),
+  ].filter(Boolean)
+  document.getElementById("channels").replaceChildren(...parts)
+}
+function fallback() {
+  const p = el("p", "The list could not be loaded. Read it on GitHub: ")
+  p.append(link("stats/sources.json", FILE))
+  document.getElementById("channels").replaceChildren(p)
+}
+fetch(SOURCE).then((r) => (r.ok ? r.json() : Promise.reject(r.status))).then(render, fallback)
+</script>
+</body>
+</html>
