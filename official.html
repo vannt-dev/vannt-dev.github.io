@@ -279,7 +279,7 @@ async function attestation(repo, asset) {
         el("code", `gh attestation verify ${asset.name} --owner vannt-dev`))
     }
     if (r.ok || r.status === 404) {
-      return para("GitHub lists no build attestation for this file. Attestations are made for extension ZIPs released after 15 October 2026; APKs and earlier files have none.")
+      return para("GitHub lists no build attestation for this file. Attestations are made for extension ZIPs released from 15 October 2026 on; APKs and earlier files have none.")
     }
   } catch {}
   return para("GitHub could not be asked about a build attestation just now.")
