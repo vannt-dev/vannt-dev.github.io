@@ -21,6 +21,9 @@
     --line: #e2e0d8;
     --accent: #1e40af;
     --accent-soft: #e6ecf8;
+    --ok: #15803d;
+    --bad: #b91c1c;
+    --warn: #a16207;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
@@ -32,6 +35,9 @@
       --line: #2b302e;
       --accent: #8ab4f8;
       --accent-soft: #1b2436;
+      --ok: #4ade80;
+      --bad: #f87171;
+      --warn: #facc15;
       color-scheme: dark;
     }
   }
@@ -81,6 +87,31 @@
   }
   .check p { margin: 0 0 8px; color: var(--muted); font-size: 15px; }
   .check code { display: block; color: var(--text); }
+  .status { margin-left: auto; font-size: 14px; color: var(--muted); }
+  .drop {
+    background: var(--surface); border: 2px dashed var(--line); border-radius: 12px;
+    padding: 24px 20px; margin-bottom: 14px; text-align: center;
+  }
+  .drop.over { border-color: var(--accent); background: var(--accent-soft); }
+  .drop p { margin: 0; color: var(--muted); font-size: 15px; }
+  .drop p:first-child { color: var(--text); font-size: 17px; font-weight: 500; margin-bottom: 6px; }
+  .choose {
+    font: inherit; color: var(--accent); background: none; border: 0; padding: 0;
+    cursor: pointer; text-decoration: underline;
+  }
+  .result {
+    background: var(--surface); border: 1px solid var(--line); border-left-width: 4px;
+    border-radius: 12px; padding: 14px 20px; margin-bottom: 14px;
+  }
+  .result:empty { display: none; }
+  .result p { margin: 0 0 8px; }
+  .result code { display: block; }
+  .result.ok { border-left-color: var(--ok); }
+  .result.bad { border-left-color: var(--bad); }
+  .result.warn { border-left-color: var(--warn); }
+  .result.ok strong { color: var(--ok); }
+  .result.bad strong { color: var(--bad); }
+  .result.warn strong { color: var(--warn); }
   #channels > p { color: var(--muted); }
   footer { border-top: 1px solid var(--line); padding-top: 20px; color: var(--muted); font-size: 14px; }
 </style>
@@ -97,6 +128,12 @@
 
   <section aria-labelledby="check">
     <h2 id="check">How to check a download</h2>
+    <div class="drop" id="drop">
+      <p>Drop a downloaded APK or ZIP here, or <button type="button" class="choose" id="choose">choose a file</button>.</p>
+      <p>The file stays on this device: the page computes its SHA-256 digest and compares it with the files attached to the GitHub releases listed above.</p>
+      <input type="file" id="pick" hidden>
+    </div>
+    <div class="result" id="result" aria-live="polite"></div>
     <div class="checks">
       <div class="check">
         <p>npm packages published from GitHub Actions carry provenance that names their vannt-dev repository (the package page on npmjs.com shows it). In a project that installed them:</p>
@@ -118,6 +155,9 @@
 <script>
 const SOURCE = "https://raw.githubusercontent.com/vannt-dev/vannt-dev/main/stats/sources.json"
 const FILE = "https://github.com/vannt-dev/vannt-dev/blob/main/stats/sources.json"
+const GH = "https://api.github.com/repos"
+const CACHE_MS = 10 * 60 * 1000
+const MAX_BYTES = 300 * 1024 * 1024
 const el = (tag, text, attrs = {}) => {
   const n = document.createElement(tag)
   if (text) n.textContent = text
@@ -125,6 +165,69 @@ const el = (tag, text, attrs = {}) => {
   return n
 }
 const link = (text, href) => (/^https:\/\//.test(href) ? el("a", text, { href }) : el("span", text))
+const para = (...parts) => {
+  const p = el("p")
+  p.append(...parts)
+  return p
+}
+const day = (iso) => new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" })
+
+async function getJSON(url) {
+  const r = await fetch(url)
+  if (!r.ok) throw Object.assign(new Error(`HTTP ${r.status}`), { status: r.status })
+  return r.json()
+}
+
+// GitHub allows 60 requests an hour without signing in, so release lists are kept for 10 minutes.
+async function cached(key, load) {
+  try {
+    const hit = JSON.parse(sessionStorage.getItem(key))
+    if (hit && Date.now() - hit.at < CACHE_MS) return hit.data
+  } catch {}
+  const data = await load()
+  try {
+    sessionStorage.setItem(key, JSON.stringify({ at: Date.now(), data }))
+  } catch {}
+  return data
+}
+
+const releaseLists = new Map()
+function releasesOf(repo) {
+  if (!releaseLists.has(repo)) {
+    const list = cached(`releases:${repo}`, async () =>
+      (await getJSON(`${GH}/${repo}/releases?per_page=100`)).map((r) => ({
+        tag: r.tag_name,
+        url: r.html_url,
+        date: r.published_at,
+        final: !r.draft && !r.prerelease,
+        assets: r.assets.map((a) => ({ name: a.name, digest: a.digest })),
+      })))
+    list.catch(() => releaseLists.delete(repo))
+    releaseLists.set(repo, list)
+  }
+  return releaseLists.get(repo)
+}
+
+async function npmStatus(name) {
+  const v = await getJSON(`https://registry.npmjs.org/${name}/latest`)
+  return [v.version, v.dist.attestations ? "✓ provenance" : "no provenance"]
+}
+async function pypiStatus(name) {
+  const { info, urls } = await getJSON(`https://pypi.org/pypi/${name}/json`)
+  const r = await fetch(`https://pypi.org/integrity/${name}/${info.version}/${urls[0].filename}/provenance`)
+  if (r.ok) return [info.version, "✓ provenance"]
+  return r.status === 404 ? [info.version, "no provenance"] : [info.version]
+}
+async function githubStatus(repo) {
+  const latest = (await releasesOf(repo)).find((r) => r.final)
+  return latest ? [latest.tag, day(latest.date)] : ["no release yet"]
+}
+function status(load) {
+  const s = el("span", "…", { class: "status" })
+  load().then((parts) => { s.textContent = parts.join(" · ") }, () => { s.textContent = "status unavailable" })
+  return s
+}
+
 function section(title, rows) {
   if (!rows.length) return null
   const s = el("section")
@@ -140,13 +243,15 @@ function section(title, rows) {
 }
 function render(src) {
   const parts = [
-    section("npm", (src.npm || []).map((n) => [link(n, `https://www.npmjs.com/package/${n}`)])),
-    section("PyPI", (src.pypi || []).map((n) => [link(n, `https://pypi.org/project/${n}/`)])),
+    section("npm", (src.npm || []).map((n) =>
+      [link(n, `https://www.npmjs.com/package/${n}`), status(() => npmStatus(n))])),
+    section("PyPI", (src.pypi || []).map((n) =>
+      [link(n, `https://pypi.org/project/${n}/`), status(() => pypiStatus(n))])),
     section("Chrome Web Store", (src.chromeWebStore || []).map((e) =>
       [link(e.name, `https://chromewebstore.google.com/detail/${e.id}`), el("code", e.id)])),
     section("Other stores", (src.otherListings || []).map((l) => [link(`${l.name} (${l.store})`, l.url)])),
     section("GitHub releases", (src.githubReleases || []).map((r) =>
-      [link(r, `https://github.com/${r}/releases`)])),
+      [link(r, `https://github.com/${r}/releases`), status(() => githubStatus(r))])),
     section("Android signing certificates (APKs from GitHub releases)",
       (src.signingCertificates || []).map((c) => [el("span", c.repo), el("code", c.sha256)])),
   ].filter(Boolean)
@@ -157,7 +262,104 @@ function fallback() {
   p.append(link("stats/sources.json", FILE))
   document.getElementById("channels").replaceChildren(p)
 }
-fetch(SOURCE).then((r) => (r.ok ? r.json() : Promise.reject(r.status))).then(render, fallback)
+const sources = getJSON(SOURCE)
+sources.then(render, fallback)
+
+const result = document.getElementById("result")
+let runs = 0
+async function sha256(file) {
+  const hash = await crypto.subtle.digest("SHA-256", await file.arrayBuffer())
+  return [...new Uint8Array(hash)].map((b) => b.toString(16).padStart(2, "0")).join("")
+}
+async function attestation(repo, asset) {
+  try {
+    const r = await fetch(`${GH}/${repo}/attestations/${asset.digest}`)
+    if (r.ok && (await r.json()).attestations?.length) {
+      return para("GitHub lists a build attestation for this file. To verify it:",
+        el("code", `gh attestation verify ${asset.name} --owner vannt-dev`))
+    }
+    if (r.ok || r.status === 404) {
+      return para("GitHub lists no build attestation for this file. Attestations are made for extension ZIPs released after 15 October 2026; APKs and earlier files have none.")
+    }
+  } catch {}
+  return para("GitHub could not be asked about a build attestation just now.")
+}
+async function check(file) {
+  const run = ++runs
+  const show = (kind, ...nodes) => {
+    if (run !== runs) return
+    result.className = `result ${kind}`
+    result.replaceChildren(...nodes)
+  }
+  if (!window.crypto?.subtle) {
+    return show("warn", para(el("strong", "Not checked. "), "This browser cannot compute a SHA-256 digest on this page. Use the commands below."))
+  }
+  if (file.size > MAX_BYTES) {
+    return show("warn", para(el("strong", "Not checked. "), `${file.name} is larger than 300 MB; vannt-dev publishes no release file that large.`))
+  }
+  show("busy", para(`Checking ${file.name}…`))
+  const hex = await sha256(file)
+  const digest = `sha256:${hex}`
+  const hash = el("code", `SHA-256 ${hex}`)
+  let repos
+  try {
+    repos = (await sources).githubReleases || []
+  } catch {
+    return show("warn", para(el("strong", "Not checked. "), "The list of official channels could not be loaded."), hash)
+  }
+  const lists = await Promise.allSettled(repos.map(releasesOf))
+  for (const [i, list] of lists.entries()) {
+    if (list.status !== "fulfilled") continue
+    for (const release of list.value) {
+      const asset = release.assets.find((a) => a.digest === digest)
+      if (!asset) continue
+      const found = para(el("strong", "Official file. "), `This is ${asset.name}, attached to `,
+        link(`${repos[i]} ${release.tag}`, release.url), ` (${day(release.date)}).`)
+      show("ok", found, para("Looking for a build attestation…"), hash)
+      return show("ok", found, await attestation(repos[i], asset), hash)
+    }
+  }
+  const failed = repos.filter((_, i) => lists[i].status === "rejected")
+  if (failed.length) {
+    const limited = lists.some((l) => l.status === "rejected" && [403, 429].includes(l.reason.status))
+    return show("warn",
+      para(el("strong", "Not checked. "), `The release list of ${failed.join(", ")} could not be loaded` +
+        (limited ? ": GitHub allows 60 requests an hour without signing in. Try again later." : ".")),
+      para("Or use the commands below."), hash)
+  }
+  show("bad",
+    para(el("strong", "No match. "), `${file.name} is not a file attached to any release of the repositories listed above.`),
+    para("npm and PyPI packages, and extensions installed from the Chrome Web Store, are checked with the commands below instead."),
+    hash)
+}
+const start = (file) => {
+  if (file) check(file).catch(() => {
+    result.className = "result warn"
+    result.replaceChildren(para(el("strong", "Not checked. "), `${file.name} could not be read.`))
+  })
+}
+
+const drop = document.getElementById("drop")
+const pick = document.getElementById("pick")
+document.getElementById("choose").addEventListener("click", () => pick.click())
+pick.addEventListener("change", () => {
+  start(pick.files[0])
+  pick.value = ""
+})
+document.addEventListener("dragover", (e) => {
+  if (!e.dataTransfer.types.includes("Files")) return
+  e.preventDefault()
+  drop.classList.add("over")
+})
+document.addEventListener("dragleave", (e) => {
+  if (!e.relatedTarget) drop.classList.remove("over")
+})
+document.addEventListener("drop", (e) => {
+  if (!e.dataTransfer.types.includes("Files")) return
+  e.preventDefault()
+  drop.classList.remove("over")
+  start(e.dataTransfer.files[0])
+})
 </script>
 </body>
 </html>
